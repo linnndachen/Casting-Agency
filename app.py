@@ -28,7 +28,8 @@ def create_app(test_config=None):
 
   #Movie endpoints
   @app.route('/movies', methods=['GET'])
-  def get_movies():
+  @requires_auth('get:movies')
+  def get_movies(payload):
     try:
       movies = Movie.query.all()
       return jsonify({
@@ -39,7 +40,8 @@ def create_app(test_config=None):
       abort (500)
 
   @app.route('/movies', methods=['POST'])
-  def add_movie():
+  @requires_auth('post:movies')
+  def add_movie(payload):
     try:
       data = request.get_json()
       movie = Movie(
@@ -57,7 +59,8 @@ def create_app(test_config=None):
       abort(422)
 
   @app.route('/movies/<int:id>', methods=['PATCH'])
-  def update_movie(id):
+  @requires_auth('patch:movies')
+  def update_movie(payload, id):
     try:
       new_info = request.get_json()
       movie = Movie.query.filter(Movie.id == id).one_or_none()
@@ -78,7 +81,8 @@ def create_app(test_config=None):
       abort(500)
 
   @app.route('/movies/<int:id>', methods=['DELETE'])
-  def delete_movie(id):
+  @requires_auth('delete:movies')
+  def delete_movie(payload, id):
     try:
       movie = Movie.query.filter(Actor.id == id).one_or_none()
       if movie:
@@ -94,7 +98,8 @@ def create_app(test_config=None):
 
   #Actor endpoints
   @app.route('/actors', methods=['GET'])
-  def get_actors():
+  @requires_auth('get:actors')
+  def get_actors(payload):
     try:
       actors = Actor.query.all()
       return jsonify({
@@ -106,7 +111,8 @@ def create_app(test_config=None):
 
 
   @app.route('/actors', methods=['POST'])
-  def add_actor():
+  @requires_auth('post:actors')
+  def add_actor(payload):
     try:
       data = request.get_json()
       actor = Actor(
@@ -126,7 +132,8 @@ def create_app(test_config=None):
 
 
   @app.route('/actors/<int:id>', methods=['PATCH'])
-  def update_actor(id):
+  @requires_auth('patch:actors')
+  def update_actor(payload, id):
     try:
       new_info = request.get_json()
       actor = Actor.query.filter(Actor.id == id).one_or_none()
@@ -150,7 +157,8 @@ def create_app(test_config=None):
 
 
   @app.route('/actors/<int:id>', methods=['DELETE'])
-  def delete_actor(id):
+  @requires_auth('delete:actors')
+  def delete_actor(payload, id):
     try:
       actor = Actor.query.filter(Actor.id == id).one_or_none()
       if actor:
