@@ -4,8 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy import exc
 
-from database.models import setup_db, Movie, Actor
-from auth.auth import AuthError, requires_auth
+from .database.models import db_drop_and_create_all, setup_db, Movie, Actor
+from .auth.auth import AuthError, requires_auth
 
 def create_app(test_config=None):
   # create and configure the app
@@ -18,6 +18,8 @@ def create_app(test_config=None):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, true')
     response.headers.add('Access-Control-Allow-Methods', 'GET, PATCH, PUT, POST, DELETE, OPTIONS')
     return response
+
+  #db_drop_and_create_all()
 
   #Home
   @app.route('/')
@@ -58,7 +60,7 @@ def create_app(test_config=None):
     except Exception:
       abort(422)
 
-  @app.route('/movies/<int:id>', methods=['PATCH'])
+  @app.route('/movies/<int:id>', methods=['GET','PATCH'])
   @requires_auth('patch:movies')
   def update_movie(payload, id):
     try:
@@ -75,7 +77,7 @@ def create_app(test_config=None):
         abort(404)
       return jsonify({
         'success': True,
-        'movies': movie.format()
+        'movie': [movie.format()]
     }), 200
     except Exception:
       abort(500)
@@ -84,7 +86,7 @@ def create_app(test_config=None):
   @requires_auth('delete:movies')
   def delete_movie(payload, id):
     try:
-      movie = Movie.query.filter(Actor.id == id).one_or_none()
+      movie = Movie.query.filter(Movie.id == id).one_or_none()
       if movie:
         movie.delete()
         return jsonify({
@@ -92,7 +94,7 @@ def create_app(test_config=None):
           'delete': id
         }), 200
       else:
-        abort(400)
+        abort(404)
     except Exception:
       abort(500)
 
@@ -104,7 +106,7 @@ def create_app(test_config=None):
       actors = Actor.query.all()
       return jsonify({
       'success': True,
-      'movies': [actor.format() for actor in actors]
+      'actors': [actor.format() for actor in actors]
     }), 200
     except Exception:
       abort (500)
@@ -118,20 +120,21 @@ def create_app(test_config=None):
       actor = Actor(
         name=data['name'],
         age=data['age'],
-        gender=data['gender']
+        gender=data['gender'],
+        movie_id=data['movie_id']
       )
       actor.insert()
 
       return jsonify({
         'success': True,
-        'movie': actor.format()
+        'actor': actor.format()
       }), 200
 
     except Exception:
       abort(422)
 
 
-  @app.route('/actors/<int:id>', methods=['PATCH'])
+  @app.route('/actors/<int:id>', methods=['GET','PATCH'])
   @requires_auth('patch:actors')
   def update_actor(payload, id):
     try:
@@ -144,13 +147,14 @@ def create_app(test_config=None):
                       else actor.age)
         actor.gender = (new_info['gender'] if new_info['gender']
                       else actor.gender)
-
+        actor.movie_id = (new_info['movie_id'] if new_info['movie_id']
+                      else actor.movie_id)
         actor.update()
       else:
         abort(404)
       return jsonify({
         'success': True,
-        'movies': actor.format()
+        'actor': [actor.format()]
     }), 200
     except Exception:
       abort(500)
@@ -171,6 +175,7 @@ def create_app(test_config=None):
         abort(400)
     except Exception:
       abort(500)
+
 
   #Error Handling
   @app.errorhandler(404)
@@ -199,8 +204,6 @@ def create_app(test_config=None):
     }), 422
 
   return app
-
-
 
 
 APP = create_app()
