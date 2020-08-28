@@ -10,6 +10,7 @@ PRODUCER_TOKEN = None
 ASSISTANT_TOKEN = None
 DIRECTOR_TOKEN = None
 
+
 class MainTestCase(unittest.TestCase):
     def setUp(self):
         """Define test variables and initialize app."""
@@ -18,17 +19,14 @@ class MainTestCase(unittest.TestCase):
         self.database_path = os.getenv('TEST_DATABASE_URL')
         setup_db(self.app)
 
-
     def tearDown(self):
         """Executed after reach test"""
         pass
-
 
     """
     One test for success behavior of each endpoint
     One test for error behavior of each endpoint
     """
-
 
     # MOVIES
     def test_home_page(self):
@@ -66,7 +64,6 @@ class MainTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
 
-
     def test_patch_movie(self):
         edit_movie = {
             'title': '',
@@ -76,7 +73,7 @@ class MainTestCase(unittest.TestCase):
             'Authorization': "Bearer " + DIRECTOR_TOKEN
         }
         res = self.client().patch('/movies/1', json=edit_movie,
-                           headers=auth)
+                                  headers=auth)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -125,7 +122,7 @@ class MainTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['delete'], 1)
-    
+
     def test_404_delete_movie_not_found(self):
         auth = {
             'Authorization': "Bearer " + PRODUCER_TOKEN
@@ -181,7 +178,7 @@ class MainTestCase(unittest.TestCase):
             'Authorization': "Bearer " + DIRECTOR_TOKEN
         }
         res = self.client().patch('/actors/1', json=edit_actor,
-                           headers=auth)
+                                  headers=auth)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -198,7 +195,8 @@ class MainTestCase(unittest.TestCase):
         auth = {
             'Authorization': "Bearer " + DIRECTOR_TOKEN
         }
-        res = self.client().patch('/actors/1000', json=edit_actor, headers=auth)
+        res = self.client().patch('/actors/1000', json=edit_actor,
+                                  headers=auth)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
@@ -232,7 +230,7 @@ class MainTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['delete'], 1)
-    
+
     def test_404_delete_actor_not_found(self):
         auth = {
             'Authorization': "Bearer " + DIRECTOR_TOKEN
@@ -291,7 +289,7 @@ class MainTestCase(unittest.TestCase):
             'Authorization': "Bearer " + ASSISTANT_TOKEN
         }
         res = self.client().patch('/movies/1', json=edit_movie,
-                           headers=auth)
+                                  headers=auth)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 401)
