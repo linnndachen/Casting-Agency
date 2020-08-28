@@ -3,9 +3,8 @@ from flask import Flask, render_template, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy import exc
-
-from .database.models import db_drop_and_create_all, setup_db, Movie, Actor
-from .auth.auth import AuthError, requires_auth
+from auth import AuthError, requires_auth
+from models import db_drop_and_create_all, setup_db, Movie, Actor
 
 
 def create_app(test_config=None):
@@ -197,6 +196,22 @@ def create_app(test_config=None):
             'error': 422,
             'message': 'unprocessable. Check your input.'
           }), 422
+
+    @app.errorhandler(401)
+    def unauthorized(error):
+        return jsonify({
+            "success": False,
+            "error": 401,
+            "message": 'Unauthorized Request.'
+            }), 401
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify({
+            "success": False,
+            "error": 403,
+            "message": "You are not allowed to access this resource",
+                }), 403
 
     return app
 
