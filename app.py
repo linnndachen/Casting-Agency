@@ -10,7 +10,7 @@ from models import db_drop_and_create_all, setup_db, Movie, Actor
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
-    app.secret_key='SECRET'
+    app.secret_key = 'SECRET'
     setup_db(app)
     CORS(app, resources={"/": {"origins": "*"}})
 
@@ -50,8 +50,8 @@ def create_app(test_config=None):
             title=data['title'],
             release_date=data['release_date']
             )
-        if movie.title =='' or movie.release_date == '':
-            abort (422)
+        if movie.title == '' or movie.release_date == '':
+            abort(422)
 
         try:
             movie.insert()
@@ -70,13 +70,13 @@ def create_app(test_config=None):
         movie = Movie.query.filter(Movie.id == id).one_or_none()
         if movie:
             movie.title = (new_info['title'] if new_info['title']
-                            else movie.title)
+                           else movie.title)
             movie.release_date = (new_info['release_date'] if
-                                    new_info['release_date']
-                                    else movie.release_date)
+                                  new_info['release_date'] else
+                                  movie.release_date)
         else:
             abort(404)
-        try: 
+        try:
             movie.update()
 
             return jsonify({
@@ -103,7 +103,6 @@ def create_app(test_config=None):
         else:
             abort(404)
 
-
     # Actor endpoints
     @app.route('/actors', methods=['GET'])
     @requires_auth('get:actors')
@@ -127,7 +126,7 @@ def create_app(test_config=None):
             gender=data['gender'],
             movie_id=data['movie_id']
             )
-        if actor.name == '' or actor.age =='' or actor.gender =='':
+        if actor.name == '' or actor.age == '' or actor.gender == '':
             abort(422)
         try:
             actor.insert()
@@ -146,14 +145,14 @@ def create_app(test_config=None):
         actor = Actor.query.filter(Actor.id == id).one_or_none()
         if actor:
             actor.name = (new_info['name'] if new_info['name']
-                            else Actor.name)
+                          else Actor.name)
             actor.age = (new_info['age'] if new_info['age']
-                            else actor.age)
+                         else actor.age)
             actor.gender = (new_info['gender'] if new_info['gender']
                             else actor.gender)
             actor.movie_id = (new_info['movie_id'] if new_info['movie_id']
-                                else actor.movie_id)
-            try: 
+                              else actor.movie_id)
+            try:
                 actor.update()
                 return jsonify({
                     'success': True,
@@ -169,7 +168,7 @@ def create_app(test_config=None):
     def delete_actor(payload, id):
         actor = Actor.query.filter(Actor.id == id).one_or_none()
         if actor:
-            try: 
+            try:
                 actor.delete()
                 return jsonify({
                     'success': True,
