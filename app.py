@@ -10,6 +10,7 @@ from models import db_drop_and_create_all, setup_db, Movie, Actor
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
+    app.secret_key='SECRET'
     setup_db(app)
     CORS(app, resources={"/": {"origins": "*"}})
 
@@ -38,18 +39,21 @@ def create_app(test_config=None):
                 'success': True,
                 'movies': [movie.format() for movie in movies]
                 }), 200
-        except Exception:
-            abort(500)
+        except AuthError:
+            abort(401)
 
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
     def add_movie(payload):
+        data = request.get_json()
+        movie = Movie(
+            title=data['title'],
+            release_date=data['release_date']
+            )
+        if movie.title =='' or movie.release_date == '':
+            abort (422)
+
         try:
-            data = request.get_json()
-            movie = Movie(
-                title=data['title'],
-                release_date=data['release_date']
-                )
             movie.insert()
 
             return jsonify({
@@ -57,24 +61,24 @@ def create_app(test_config=None):
                 'movie': movie.format()
                 }), 200
         except Exception:
-            abort(422)
+            abort(500)
 
     @app.route('/movies/<int:id>', methods=['GET', 'PATCH'])
     @requires_auth('patch:movies')
     def update_movie(payload, id):
-        try:
-            new_info = request.get_json()
-            movie = Movie.query.filter(Movie.id == id).one_or_none()
-            if movie:
-                movie.title = (new_info['title'] if new_info['title']
-                               else movie.title)
-                movie.release_date = (new_info['release_date'] if
-                                      new_info['release_date']
-                                      else movie.release_date)
+        new_info = request.get_json()
+        movie = Movie.query.filter(Movie.id == id).one_or_none()
+        if movie:
+            movie.title = (new_info['title'] if new_info['title']
+                            else movie.title)
+            movie.release_date = (new_info['release_date'] if
+                                    new_info['release_date']
+                                    else movie.release_date)
+        else:
+            abort(404)
+        try: 
+            movie.update()
 
-                movie.update()
-            else:
-                abort(404)
             return jsonify({
                 'success': True,
                 'movie': [movie.format()]
@@ -85,18 +89,19 @@ def create_app(test_config=None):
     @app.route('/movies/<int:id>', methods=['DELETE'])
     @requires_auth('delete:movies')
     def delete_movie(payload, id):
-        try:
-            movie = Movie.query.filter(Movie.id == id).one_or_none()
-            if movie:
+        movie = Movie.query.filter(Movie.id == id).one_or_none()
+        if movie:
+            try:
                 movie.delete()
                 return jsonify({
                     'success': True,
                     'delete': id
                     }), 200
-            else:
-                abort(404)
-        except Exception:
-            abort(500)
+            except Exception:
+                abort(500)
+        else:
+            abort(404)
+
 
     # Actor endpoints
     @app.route('/actors', methods=['GET'])
@@ -114,14 +119,16 @@ def create_app(test_config=None):
     @app.route('/actors', methods=['POST'])
     @requires_auth('post:actors')
     def add_actor(payload):
+        data = request.get_json()
+        actor = Actor(
+            name=data['name'],
+            age=data['age'],
+            gender=data['gender'],
+            movie_id=data['movie_id']
+            )
+        if actor.name == '' or actor.age =='' or actor.gender =='':
+            abort(422)
         try:
-            data = request.get_json()
-            actor = Actor(
-                name=data['name'],
-                age=data['age'],
-                gender=data['gender'],
-                movie_id=data['movie_id']
-                )
             actor.insert()
 
             return jsonify({
@@ -129,48 +136,48 @@ def create_app(test_config=None):
                 'actor': actor.format()
                 }), 200
         except Exception:
-            abort(422)
+            abort(500)
 
     @app.route('/actors/<int:id>', methods=['GET', 'PATCH'])
     @requires_auth('patch:actors')
     def update_actor(payload, id):
-        try:
-            new_info = request.get_json()
-            actor = Actor.query.filter(Actor.id == id).one_or_none()
-            if actor:
-                actor.name = (new_info['name'] if new_info['name']
-                              else Actor.name)
-                actor.age = (new_info['age'] if new_info['age']
-                             else actor.age)
-                actor.gender = (new_info['gender'] if new_info['gender']
-                                else actor.gender)
-                actor.movie_id = (new_info['movie_id'] if new_info['movie_id']
-                                  else actor.movie_id)
+        new_info = request.get_json()
+        actor = Actor.query.filter(Actor.id == id).one_or_none()
+        if actor:
+            actor.name = (new_info['name'] if new_info['name']
+                            else Actor.name)
+            actor.age = (new_info['age'] if new_info['age']
+                            else actor.age)
+            actor.gender = (new_info['gender'] if new_info['gender']
+                            else actor.gender)
+            actor.movie_id = (new_info['movie_id'] if new_info['movie_id']
+                                else actor.movie_id)
+            try: 
                 actor.update()
-            else:
-                abort(404)
-            return jsonify({
-                'success': True,
-                'actor': [actor.format()]
-                }), 200
-        except Exception:
-            abort(500)
+                return jsonify({
+                    'success': True,
+                    'actor': [actor.format()]
+                    }), 200
+            except Exception:
+                abort(500)
+        else:
+            abort(404)
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
     @requires_auth('delete:actors')
     def delete_actor(payload, id):
-        try:
-            actor = Actor.query.filter(Actor.id == id).one_or_none()
-            if actor:
+        actor = Actor.query.filter(Actor.id == id).one_or_none()
+        if actor:
+            try: 
                 actor.delete()
                 return jsonify({
                     'success': True,
                     'delete': id
                     }), 200
-            else:
-                abort(400)
-        except Exception:
-            abort(500)
+            except Exception:
+                abort(500)
+        else:
+            abort(404)
 
     # Error Handling
     @app.errorhandler(404)
@@ -197,14 +204,6 @@ def create_app(test_config=None):
             'message': 'unprocessable. Check your input.'
           }), 422
 
-    @app.errorhandler(401)
-    def unauthorized(error):
-        return jsonify({
-            "success": False,
-            "error": 401,
-            "message": 'Unauthorized Request.'
-            }), 401
-
     @app.errorhandler(403)
     def forbidden(error):
         return jsonify({
@@ -212,6 +211,14 @@ def create_app(test_config=None):
             "error": 403,
             "message": "You are not allowed to access this resource",
                 }), 403
+
+    return app
+
+    @app.errorhandler(AuthError)
+    def auth_error(ex):
+        res = jsonify(ex.error)
+        res.status_code = ex.status_code
+        return res
 
     return app
 
