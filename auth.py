@@ -1,3 +1,4 @@
+import os
 import json
 from flask import request, _request_ctx_stack, abort
 from functools import wraps
@@ -7,7 +8,11 @@ from urllib.request import urlopen
 
 AUTH0_DOMAIN = 'casting-project.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'casting'
+API_AUDIENCE = 'http://localhost:8080'
+
+# AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
+# ALGORITHMS = os.environ['ALGORITHMS']
+# API_AUDIENCE = os.environ['API_AUDIENCE']
 
 # AuthError Exception
 '''
