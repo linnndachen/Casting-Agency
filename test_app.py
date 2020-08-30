@@ -7,9 +7,9 @@ from app import create_app
 from models import setup_db, db
 
 
-PRODUCER_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im8wZUlrUzMyNzVFM3pBQnRKcUsxZiJ9.eyJpc3MiOiJodHRwczovL2Nhc3RpbmctcHJvamVjdC51cy5hdXRoMC5jb20vIiwic3ViIjoiSnlkM0NyZWtLQmxZWjlpQmMwN0YxZEtZalk2UlhxTVZAY2xpZW50cyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImlhdCI6MTU5ODc0NzU5NiwiZXhwIjoxNTk4ODMzOTk2LCJhenAiOiJKeWQzQ3Jla0tCbFlaOWlCYzA3RjFkS1lqWTZSWHFNViIsInNjb3BlIjoiZ2V0Om1vdmllcyBnZXQ6YWN0b3JzIHBvc3Q6bW92aWVzIHBvc3Q6YWN0b3JzIHBhdGNoOmFjdG9ycyBwYXRjaDptb3ZpZXMgZGVsZXRlOmFjdG9ycyBkZWxldGU6bW92aWVzIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsiZ2V0Om1vdmllcyIsImdldDphY3RvcnMiLCJwb3N0Om1vdmllcyIsInBvc3Q6YWN0b3JzIiwicGF0Y2g6YWN0b3JzIiwicGF0Y2g6bW92aWVzIiwiZGVsZXRlOmFjdG9ycyIsImRlbGV0ZTptb3ZpZXMiXX0.P0LokP_8FLbKbMUvjB0lUQqc_ECuXVAyXKHA0OJBj-y3olS8QLoDXzwKOV96acjA3RnV4E_XU_YGP8uadrhHT09BFYLeupqKuzRPky_hHfqtHNDFDVCvZdNZZx2Fmj_5mXx702f0HTJ2uYW3Hfsz5POx5YGBJPO_N4jpG7-ISyxLe3iUfBDBWczB2iqLelcmGIUSTEsvS2InYDbYl0pd5tdlhsb-32HF7etKcepAHosERRS0G0N4r4GhW1b2Ohk8VpHlb3PmMGTIQ3cIasPnmx-xdkXKr0N9OFIapDdPkxp2p7SnTfnVPBuX_CL5i6ES-VzGsbqot1x2qKRKiUQcZQ'
-ASSISTANT_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im8wZUlrUzMyNzVFM3pBQnRKcUsxZiJ9.eyJpc3MiOiJodHRwczovL2Nhc3RpbmctcHJvamVjdC51cy5hdXRoMC5jb20vIiwic3ViIjoiSnlkM0NyZWtLQmxZWjlpQmMwN0YxZEtZalk2UlhxTVZAY2xpZW50cyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImlhdCI6MTU5ODc0Nzc1NywiZXhwIjoxNTk4ODM0MTU3LCJhenAiOiJKeWQzQ3Jla0tCbFlaOWlCYzA3RjFkS1lqWTZSWHFNViIsInNjb3BlIjoiZ2V0Om1vdmllcyBnZXQ6YWN0b3JzIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsiZ2V0Om1vdmllcyIsImdldDphY3RvcnMiXX0.jB8h02q-AhbWgMPkagMgjYZouSzn-aLaYkJ3OCaDzkLY48HnkmN6et0fsH6F_6QL8pCVCuMXDCjZQnVJwCqxbufhgtJkEgcf18IImVkvrj-dcMCmmVeljaNvERiSilJGo4Wg82eicyqOX1bnfiTGwZVHZbEMwDoy36fitd3G0ok5p9R__SMfz0Q0DtFoUBGp-ENVGKWC-MyGQOU6oUnoyOAKlfAujKvY8MNIPnU3AXDtIirJe4CgO-vQNhe1_Uy58hD2c8f7tu_JxbVXUFu_ACezWzrNpDrlIffB08PqLJYNEnzaS3T4EruSX9mmBRPz-m6Jwo89ejhF2lFciJ1ocQ'
-DIRECTOR_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im8wZUlrUzMyNzVFM3pBQnRKcUsxZiJ9.eyJpc3MiOiJodHRwczovL2Nhc3RpbmctcHJvamVjdC51cy5hdXRoMC5jb20vIiwic3ViIjoiSnlkM0NyZWtLQmxZWjlpQmMwN0YxZEtZalk2UlhxTVZAY2xpZW50cyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImlhdCI6MTU5ODc0NzY5NCwiZXhwIjoxNTk4ODM0MDk0LCJhenAiOiJKeWQzQ3Jla0tCbFlaOWlCYzA3RjFkS1lqWTZSWHFNViIsInNjb3BlIjoiZ2V0Om1vdmllcyBnZXQ6YWN0b3JzIHBvc3Q6YWN0b3JzIHBhdGNoOmFjdG9ycyBwYXRjaDptb3ZpZXMgZGVsZXRlOmFjdG9ycyIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsInBlcm1pc3Npb25zIjpbImdldDptb3ZpZXMiLCJnZXQ6YWN0b3JzIiwicG9zdDphY3RvcnMiLCJwYXRjaDphY3RvcnMiLCJwYXRjaDptb3ZpZXMiLCJkZWxldGU6YWN0b3JzIl19.MqZGO9bDIvLEwDHxEcAE6vbF06go-1NHOD0Vk7TLezvl8ljB2P_HYrnSGFbfQxWNGXRAWOJjByAALcTZrdh4F89HeLBM6H7Q9u0zGRWhA17Yot8ggOh6UUzOBKzmPLNsjDHsYWQ4_ePc7pgpo4M5t9vZlBBz1B_OyEK3_ucpAMPliPLgmrq0ynw2sRA3om2SGtylILc2KTyjz-v-qVKJs-rvajv9lajIHtniVAUhGXFy7InJE7Vw4ttLUxv1uNQVksdCjSV-qYgQq7VHh4jDyDtq9HJvHJM1uByu8xHE_I11zYyXHhmWVf2nua_cAy1Yb6lbTHVSVQJf1VX9ikd4nQ'
+PRODUCER_TOKEN = ('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im8wZUlrUzMyNzVFM3pBQnRKcUsxZiJ9.eyJpc3MiOiJodHRwczovL2Nhc3RpbmctcHJvamVjdC51cy5hdXRoMC5jb20vIiwic3ViIjoiSnlkM0NyZWtLQmxZWjlpQmMwN0YxZEtZalk2UlhxTVZAY2xpZW50cyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImlhdCI6MTU5ODc0NzU5NiwiZXhwIjoxNTk4ODMzOTk2LCJhenAiOiJKeWQzQ3Jla0tCbFlaOWlCYzA3RjFkS1lqWTZSWHFNViIsInNjb3BlIjoiZ2V0Om1vdmllcyBnZXQ6YWN0b3JzIHBvc3Q6bW92aWVzIHBvc3Q6YWN0b3JzIHBhdGNoOmFjdG9ycyBwYXRjaDptb3ZpZXMgZGVsZXRlOmFjdG9ycyBkZWxldGU6bW92aWVzIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsiZ2V0Om1vdmllcyIsImdldDphY3RvcnMiLCJwb3N0Om1vdmllcyIsInBvc3Q6YWN0b3JzIiwicGF0Y2g6YWN0b3JzIiwicGF0Y2g6bW92aWVzIiwiZGVsZXRlOmFjdG9ycyIsImRlbGV0ZTptb3ZpZXMiXX0.P0LokP_8FLbKbMUvjB0lUQqc_ECuXVAyXKHA0OJBj-y3olS8QLoDXzwKOV96acjA3RnV4E_XU_YGP8uadrhHT09BFYLeupqKuzRPky_hHfqtHNDFDVCvZdNZZx2Fmj_5mXx702f0HTJ2uYW3Hfsz5POx5YGBJPO_N4jpG7-ISyxLe3iUfBDBWczB2iqLelcmGIUSTEsvS2InYDbYl0pd5tdlhsb-32HF7etKcepAHosERRS0G0N4r4GhW1b2Ohk8VpHlb3PmMGTIQ3cIasPnmx-xdkXKr0N9OFIapDdPkxp2p7SnTfnVPBuX_CL5i6ES-VzGsbqot1x2qKRKiUQcZQ')
+ASSISTANT_TOKEN = ('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im8wZUlrUzMyNzVFM3pBQnRKcUsxZiJ9.eyJpc3MiOiJodHRwczovL2Nhc3RpbmctcHJvamVjdC51cy5hdXRoMC5jb20vIiwic3ViIjoiSnlkM0NyZWtLQmxZWjlpQmMwN0YxZEtZalk2UlhxTVZAY2xpZW50cyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImlhdCI6MTU5ODc0Nzc1NywiZXhwIjoxNTk4ODM0MTU3LCJhenAiOiJKeWQzQ3Jla0tCbFlaOWlCYzA3RjFkS1lqWTZSWHFNViIsInNjb3BlIjoiZ2V0Om1vdmllcyBnZXQ6YWN0b3JzIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsiZ2V0Om1vdmllcyIsImdldDphY3RvcnMiXX0.jB8h02q-AhbWgMPkagMgjYZouSzn-aLaYkJ3OCaDzkLY48HnkmN6et0fsH6F_6QL8pCVCuMXDCjZQnVJwCqxbufhgtJkEgcf18IImVkvrj-dcMCmmVeljaNvERiSilJGo4Wg82eicyqOX1bnfiTGwZVHZbEMwDoy36fitd3G0ok5p9R__SMfz0Q0DtFoUBGp-ENVGKWC-MyGQOU6oUnoyOAKlfAujKvY8MNIPnU3AXDtIirJe4CgO-vQNhe1_Uy58hD2c8f7tu_JxbVXUFu_ACezWzrNpDrlIffB08PqLJYNEnzaS3T4EruSX9mmBRPz-m6Jwo89ejhF2lFciJ1ocQ')
+DIRECTOR_TOKEN = ('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im8wZUlrUzMyNzVFM3pBQnRKcUsxZiJ9.eyJpc3MiOiJodHRwczovL2Nhc3RpbmctcHJvamVjdC51cy5hdXRoMC5jb20vIiwic3ViIjoiSnlkM0NyZWtLQmxZWjlpQmMwN0YxZEtZalk2UlhxTVZAY2xpZW50cyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImlhdCI6MTU5ODc0NzY5NCwiZXhwIjoxNTk4ODM0MDk0LCJhenAiOiJKeWQzQ3Jla0tCbFlaOWlCYzA3RjFkS1lqWTZSWHFNViIsInNjb3BlIjoiZ2V0Om1vdmllcyBnZXQ6YWN0b3JzIHBvc3Q6YWN0b3JzIHBhdGNoOmFjdG9ycyBwYXRjaDptb3ZpZXMgZGVsZXRlOmFjdG9ycyIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsInBlcm1pc3Npb25zIjpbImdldDptb3ZpZXMiLCJnZXQ6YWN0b3JzIiwicG9zdDphY3RvcnMiLCJwYXRjaDphY3RvcnMiLCJwYXRjaDptb3ZpZXMiLCJkZWxldGU6YWN0b3JzIl19.MqZGO9bDIvLEwDHxEcAE6vbF06go-1NHOD0Vk7TLezvl8ljB2P_HYrnSGFbfQxWNGXRAWOJjByAALcTZrdh4F89HeLBM6H7Q9u0zGRWhA17Yot8ggOh6UUzOBKzmPLNsjDHsYWQ4_ePc7pgpo4M5t9vZlBBz1B_OyEK3_ucpAMPliPLgmrq0ynw2sRA3om2SGtylILc2KTyjz-v-qVKJs-rvajv9lajIHtniVAUhGXFy7InJE7Vw4ttLUxv1uNQVksdCjSV-qYgQq7VHh4jDyDtq9HJvHJM1uByu8xHE_I11zYyXHhmWVf2nua_cAy1Yb6lbTHVSVQJf1VX9ikd4nQ')
 
 
 class MainTestCase(unittest.TestCase):
@@ -56,7 +56,6 @@ class MainTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-
 
     def test_422_missing_post_movie_info(self):
         new_movie = {
@@ -281,13 +280,14 @@ class MainTestCase(unittest.TestCase):
         }
         headers = {
             'Content-Type': 'application/json',
-            'Authorization':"Bearer {}".format(ASSISTANT_TOKEN)
+            'Authorization': "Bearer {}".format(ASSISTANT_TOKEN)
         }
         res = self.client().post('/actors', json=new_actor, headers=headers)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
-        self.assertEqual(data['message'], 'You are not allowed to access this resource')
+        self.assertEqual(data['message'],
+                         'You are not allowed to access this resource')
 
     def test_403_unauth_modify_movie(self):
         edit_movie = {
@@ -296,24 +296,26 @@ class MainTestCase(unittest.TestCase):
         }
         headers = {
             'Content-Type': 'application/json',
-            'Authorization':"Bearer {}".format(ASSISTANT_TOKEN)
+            'Authorization': "Bearer {}".format(ASSISTANT_TOKEN)
         }
         res = self.client().patch('/movies/4', json=edit_movie,
                                   headers=headers)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
-        self.assertEqual(data['message'], 'You are not allowed to access this resource')
+        self.assertEqual(data['message'],
+                         'You are not allowed to access this resource')
 
     def test_403_unauth_delete_movie(self):
         auth = {
-            'Authorization':"Bearer {}".format(DIRECTOR_TOKEN)
+            'Authorization': "Bearer {}".format(DIRECTOR_TOKEN)
             }
         res = self.client().delete('/movies/6', headers=auth)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
-        self.assertEqual(data['message'], 'You are not allowed to access this resource')
+        self.assertEqual(data['message'],
+                         'You are not allowed to access this resource')
 
     def test_403_unauth_add_movie(self):
         new_movie = {
@@ -322,10 +324,11 @@ class MainTestCase(unittest.TestCase):
         }
         headers = {
             'Content-Type': 'application/json',
-            'Authorization':"Bearer {}".format(DIRECTOR_TOKEN)
+            'Authorization': "Bearer {}".format(DIRECTOR_TOKEN)
             }
         res = self.client().post('/movies', json=new_movie, headers=headers)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
-        self.assertEqual(data['message'], 'You are not allowed to access this resource')
+        self.assertEqual(data['message'],
+                         'You are not allowed to access this resource')
