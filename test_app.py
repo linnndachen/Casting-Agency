@@ -39,10 +39,8 @@ class MainTestCase(unittest.TestCase):
     # MOVIES
     def test_home_page(self):
         res = self.client().get('/')
-        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
 
     def test_post_movie(self):
         new_movie = {
@@ -58,6 +56,7 @@ class MainTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
+
 
     def test_422_missing_post_movie_info(self):
         new_movie = {
@@ -115,11 +114,11 @@ class MainTestCase(unittest.TestCase):
         self.assertTrue(data['movies'])
 
     def test_401_unauth_get_movies(self):
-        res = self.client().get('/movies')
+        res = self.client().get('/movies', headers='')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 401)
-        self.assertTrue(data['description'])
+        self.assertEqual(data['code'], 'authorization_header_missing')
 
     def test_delete_movie(self):
         auth = {
@@ -149,7 +148,7 @@ class MainTestCase(unittest.TestCase):
             'name': 'Timothée Chalamet',
             'age': 24,
             'gender': 'M',
-            'movie_id': 1
+            'movie_id': 6
         }
         headers = {
             'Content-Type': 'application/json',
@@ -224,10 +223,11 @@ class MainTestCase(unittest.TestCase):
         self.assertTrue(data['actors'])
 
     def test_401_unauth_get_actors(self):
-        res = self.client().get('/actors')
+        res = self.client().get('/actors', headers='')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['code'], 'authorization_header_missing')
 
     def test_delete_actor(self):
         auth = {
@@ -260,6 +260,7 @@ class MainTestCase(unittest.TestCase):
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['code'], 'invalid_header')
 
     def test_401_invalid_token_view_actor(self):
         auth = {
@@ -269,6 +270,7 @@ class MainTestCase(unittest.TestCase):
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['code'], 'invalid_header')
 
     def test_403_unauth_add_actor(self):
         new_actor = {
@@ -279,12 +281,13 @@ class MainTestCase(unittest.TestCase):
         }
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': "Bearer " + ASSISTANT_TOKEN
+            'Authorization':"Bearer {}".format(ASSISTANT_TOKEN)
         }
         res = self.client().post('/actors', json=new_actor, headers=headers)
-        #data = json.load(res.data)
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['message'], 'You are not allowed to access this resource')
 
     def test_403_unauth_modify_movie(self):
         edit_movie = {
@@ -293,22 +296,24 @@ class MainTestCase(unittest.TestCase):
         }
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': "Bearer " + ASSISTANT_TOKEN
+            'Authorization':"Bearer {}".format(ASSISTANT_TOKEN)
         }
         res = self.client().patch('/movies/4', json=edit_movie,
                                   headers=headers)
-        #data = json.load(res.data)
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['message'], 'You are not allowed to access this resource')
 
     def test_403_unauth_delete_movie(self):
         auth = {
-            'Authorization': "Bearer " + DIRECTOR_TOKEN
-        }
+            'Authorization':"Bearer {}".format(DIRECTOR_TOKEN)
+            }
         res = self.client().delete('/movies/6', headers=auth)
-        #data = json.load(res.data)
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['message'], 'You are not allowed to access this resource')
 
     def test_403_unauth_add_movie(self):
         new_movie = {
@@ -317,9 +322,10 @@ class MainTestCase(unittest.TestCase):
         }
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': "Bearer " + DIRECTOR_TOKEN
-        }
+            'Authorization':"Bearer {}".format(DIRECTOR_TOKEN)
+            }
         res = self.client().post('/movies', json=new_movie, headers=headers)
-        #data = json.load(res.data)
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['message'], 'You are not allowed to access this resource')
