@@ -2,7 +2,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app
-from database.models import db, Movie, Actor
+from models import db, Movie, Actor
 
 app = create_app()
 
