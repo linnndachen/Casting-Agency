@@ -39,8 +39,8 @@ def create_app(test_config=None):
                 'success': True,
                 'movies': [movie.format() for movie in movies]
                 }), 200
-        except AuthError:
-            abort(401)
+        except Exception:
+            abort(500)
 
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
@@ -98,6 +98,7 @@ def create_app(test_config=None):
                     'delete': id
                     }), 200
             except Exception:
+                db.session.rollback()
                 abort(500)
         else:
             abort(404)
@@ -175,11 +176,20 @@ def create_app(test_config=None):
                     'delete': id
                     }), 200
             except Exception:
+                db.session.rollback()
                 abort(500)
         else:
             abort(404)
 
     # Error Handling
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "Bad Request, please check your inputs"
+            }), 400
+
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
@@ -212,8 +222,6 @@ def create_app(test_config=None):
             "message": "You are not allowed to access this resource",
                 }), 403
 
-    return app
-
     @app.errorhandler(AuthError)
     def auth_error(ex):
         res = jsonify(ex.error)
@@ -225,7 +233,6 @@ def create_app(test_config=None):
 
 APP = create_app()
 
-"""
+
 if __name__ == '__main__':
     APP.run(host='0.0.0.0', port=8080, debug=True)
-"""
