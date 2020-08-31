@@ -3,6 +3,10 @@
 ## Project Description
 This is the capstone project for Full-Stack Udacity Nanodegree. Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. There are three different roles in the company Casting Assistant, Casting Director, and Executive Producer. Each of them has a different set of permissions to view, add, update and delete movies and actors in the databse.
 
+## Project Result
+Heroku: https://udacitycapstone-casting.herokuapp.com/
+Localhost: http://127.0.0.1:5000/
+
 ## Tech Stack
 * **PostgreSQL** as our database of choice
 * **Python3** and **Flask** as our server language and server framework
