@@ -25,8 +25,9 @@ This is the capstone project for Full-Stack Udacity Nanodegree. Casting Agency m
   ```
   This will install all of the required packages we selected within the `requirements.txt` file.
 
+3. run ```source setup.sh``` to set the user jwts, auth0 credentials
+
 3. Database Setup
-  With Postgres running, restore a database using the casting.pgsql file provided. From the backend folder in terminal run:
 
   ```
   psql casting < casting.pgsql
