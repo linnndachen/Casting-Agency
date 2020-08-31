@@ -5,6 +5,7 @@ This is the capstone project for Full-Stack Udacity Nanodegree. Casting Agency m
 
 ## Project Result
 Heroku: https://udacitycapstone-casting.herokuapp.com/
+
 Localhost: http://127.0.0.1:5000/
 
 ## Tech Stack
@@ -57,7 +58,7 @@ python -m unittest test_app.py
 
 ### Endpoints
 
-##### GET '/movies'
+#### GET '/movies'
 - General:
     - Return all movies in the database
     - Role Authorized: Assistant, Director, Producer
@@ -89,7 +90,7 @@ python -m unittest test_app.py
     "success": true
 }
 ```
-##### GET '/actors'
+#### GET '/actors'
 - General:
     - Return all actors in the database
     - Role Authorized: Assistant, Director, Producer
@@ -130,7 +131,7 @@ python -m unittest test_app.py
 }
 ```
 
-##### POST '/movies'
+#### POST '/movies'
 - General:
     - Add a new movie. The new movie must have all four information. 
     - Role Authorized: Producer
@@ -146,7 +147,7 @@ python -m unittest test_app.py
 }
 ```
 
-##### POST '/actors'
+#### POST '/actors'
 - General:
     - Add a new actor. The new movie must have all four information. 
     - Role Authorized: Director, Producer
@@ -165,7 +166,7 @@ python -m unittest test_app.py
 }
 ```
 
-##### PATCH '/movies/<int:id>'
+#### PATCH '/movies/<int:id>'
 - General:
     - Update some information of a movie based on a payload.
     - Roles authorized : Director, Producer.
@@ -181,7 +182,7 @@ python -m unittest test_app.py
 }
 ```
 
-##### PATCH '/actors/<int:id>'
+#### PATCH '/actors/<int:id>'
 - General:
     - Update some information of an actor based on a payload.
     - Roles authorized : Director, Producer.
@@ -198,7 +199,7 @@ python -m unittest test_app.py
 }
 ```
 
-##### DELETE '/movis/<int:id>'
+#### DELETE '/movis/<int:id>'
 - General:
     - Deletes a movie by id form the url parameter.
     - Roles authorized : Executive Producer.
@@ -210,7 +211,7 @@ python -m unittest test_app.py
 }
 ```
 
-##### DELETE '/actors/<int:id>'
+#### DELETE '/actors/<int:id>'
 - General:
     - Deletes a movie by id form the url parameter.
     - Roles authorized : Casting Director, Executive Producer.
