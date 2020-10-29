@@ -3,6 +3,8 @@
 ## Project Description
 This is the capstone project for Full-Stack Udacity Nanodegree. Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. There are three different roles in the company Casting Assistant, Casting Director, and Executive Producer. Each of them has a different set of permissions to view, add, update and delete movies and actors in the databse.
 
+Though the front-end is very simple, most of the work are done in the back-end. I wrote Restful APIs, built a database using SQLAlchemey, secured the application using Auth0, tested the application using unit tests and via Postman, and finally deploy the application to Heroku.
+
 ## Project Result
 Heroku: https://udacitycapstone-casting.herokuapp.com/
 
